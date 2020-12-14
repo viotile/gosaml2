@@ -28,7 +28,7 @@ import (
 	"github.com/russellhaering/gosaml2/types"
 	dsig "github.com/russellhaering/goxmldsig"
 	"github.com/russellhaering/goxmldsig/etreeutils"
-	"github.com/mattermost/xml-roundtrip-validator"
+	rtvalidator "github.com/mattermost/xml-roundtrip-validator"
 )
 
 func (sp *SAMLServiceProvider) validationContext() *dsig.ValidationContext {
@@ -372,7 +372,8 @@ func parseResponse(xml []byte) (*etree.Document, *etree.Element, error) {
 		return nil, nil, fmt.Errorf("unable to parse response")
 	}
 
-	err = validator.Validate(bytes.NewReader(rawXML))
+	// Examine the response for attempts to exploit weaknesses in Go's encoding/xml
+	err = rtvalidator.Validate(bytes.NewReader(rawXML))
 	if err != nil {
 		return nil, nil, err
 	}
