@@ -14,6 +14,7 @@
 package saml2
 
 import (
+	"bytes"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/pem"
@@ -24,6 +25,7 @@ import (
 	"github.com/jonboulle/clockwork"
 	"github.com/russellhaering/goxmldsig"
 	"github.com/stretchr/testify/require"
+	rtvalidator "github.com/mattermost/xml-roundtrip-validator"
 )
 
 const idpCert = `
@@ -133,11 +135,23 @@ func TestCompressedResponse(t *testing.T) {
 }
 
 func TestDecodeColonsInLocalNames(t *testing.T) {
+	// Handling of double colons was improved in Go 1.7 such that this test no longer fails.
+	// See: https://go-review.googlesource.com/c/go/+/277892
+	if rtvalidator.Validate(bytes.NewReader([]byte(`<x::Root/>`))) == nil {
+		t.Skip()
+	}
+
 	_, _, err := parseResponse([]byte(`<x::Root/>`))
 	require.Error(t, err)
 }
 
 func TestDecodeDoubleColonInjectionAttackResponse(t *testing.T) {
+	// Handling of double colons was improved in Go 1.7 such that this test no longer fails.
+	// See: https://go-review.googlesource.com/c/go/+/277892
+	if rtvalidator.Validate(bytes.NewReader([]byte(`<x::Root/>`))) == nil {
+		t.Skip()
+	}
+
 	_, _, err := parseResponse([]byte(doubleColonAssertionInjectionAttackResponse))
 	require.Error(t, err)
 }
