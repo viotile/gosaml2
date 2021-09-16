@@ -32,7 +32,7 @@ var oktaScenarioErrors = map[int]string{
 	8:  "error validating response: missing NotOnOrAfter attribute on SubjectConfirmationData element",
 	9:  "missing NotOnOrAfter attribute on Conditions element",
 	10: "missing NotBefore attribute on Conditions element",
-	12: "error validating response: Missing ID attribute",
+	12: "error validating response: response and/or assertions must be signed",
 	13: "error validating response: Signature could not be verified",
 	14: "error validating response: Unrecognized StatusCode value, Expected: urn:oasis:names:tc:SAML:2.0:status:Success, Actual: Failure",
 	15: "error validating response: Unrecognized StatusCode value, Expected: urn:oasis:names:tc:SAML:2.0:status:Success, Actual: urn:oasis:names:tc:SAML:2.0:status:Requester",

@@ -275,7 +275,7 @@ func TestSAML(t *testing.T) {
 
 	_, err = sp.ValidateEncodedResponse(base64.StdEncoding.EncodeToString([]byte(missingIDResponse)))
 	require.Error(t, err)
-	require.Equal(t, "Missing ID attribute", err.Error())
+	require.Equal(t, "Signature could not be verified", err.Error())
 }
 
 func TestInvalidResponseBadBase64(t *testing.T) {
