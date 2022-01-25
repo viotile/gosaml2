@@ -203,7 +203,11 @@ func (sp *SAMLServiceProvider) validateAssertionSignatures(el *etree.Element) er
 	signedAssertions := 0
 	unsignedAssertions := 0
 	validateAssertion := func(ctx etreeutils.NSContext, unverifiedAssertion *etree.Element) error {
-		if unverifiedAssertion.Parent() != el {
+		parent := unverifiedAssertion.Parent()
+		if parent == nil {
+			return fmt.Errorf("parent is nil")
+		}
+		if parent != el {
 			return fmt.Errorf("found assertion with unexpected parent element: %s", unverifiedAssertion.Parent().Tag)
 		}
 
