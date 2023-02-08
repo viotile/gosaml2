@@ -121,7 +121,7 @@ func (sp *SAMLServiceProvider) Metadata() (*types.EntityDescriptor, error) {
 			Use: "encryption",
 			KeyInfo: dsigtypes.KeyInfo{
 				X509Data: dsigtypes.X509Data{
-					X509Certificates: []dsigtypes.X509Certificate{dsigtypes.X509Certificate{
+					X509Certificates: []dsigtypes.X509Certificate{{
 						Data: base64.StdEncoding.EncodeToString(encryptionCertBytes),
 					}},
 				},
@@ -136,7 +136,7 @@ func (sp *SAMLServiceProvider) Metadata() (*types.EntityDescriptor, error) {
 		})
 	}
 	return &types.EntityDescriptor{
-		ValidUntil: time.Now().UTC().Add(time.Hour * 24 * 7), // 7 days
+		ValidUntil: sp.Clock.Now().UTC().Add(time.Hour * 24 * 7), // 7 days
 		EntityID:   sp.ServiceProviderIssuer,
 		SPSSODescriptor: &types.SPSSODescriptor{
 			AuthnRequestsSigned:        sp.SignAuthnRequests,
@@ -163,12 +163,12 @@ func (sp *SAMLServiceProvider) MetadataWithSLO(validityHours int64) (*types.Enti
 	}
 
 	if validityHours <= 0 {
-		//By default let's keep it to 7 days.
+		// By default let's keep it to 7 days.
 		validityHours = int64(time.Hour * 24 * 7)
 	}
 
 	return &types.EntityDescriptor{
-		ValidUntil: time.Now().UTC().Add(time.Duration(validityHours)), // default 7 days
+		ValidUntil: sp.Clock.Now().UTC().Add(time.Duration(validityHours)), // default 7 days
 		EntityID:   sp.ServiceProviderIssuer,
 		SPSSODescriptor: &types.SPSSODescriptor{
 			AuthnRequestsSigned:        sp.SignAuthnRequests,
@@ -179,7 +179,7 @@ func (sp *SAMLServiceProvider) MetadataWithSLO(validityHours int64) (*types.Enti
 					Use: "signing",
 					KeyInfo: dsigtypes.KeyInfo{
 						X509Data: dsigtypes.X509Data{
-							X509Certificates: []dsigtypes.X509Certificate{dsigtypes.X509Certificate{
+							X509Certificates: []dsigtypes.X509Certificate{{
 								Data: base64.StdEncoding.EncodeToString(signingCertBytes),
 							}},
 						},
@@ -189,7 +189,7 @@ func (sp *SAMLServiceProvider) MetadataWithSLO(validityHours int64) (*types.Enti
 					Use: "encryption",
 					KeyInfo: dsigtypes.KeyInfo{
 						X509Data: dsigtypes.X509Data{
-							X509Certificates: []dsigtypes.X509Certificate{dsigtypes.X509Certificate{
+							X509Certificates: []dsigtypes.X509Certificate{{
 								Data: base64.StdEncoding.EncodeToString(encryptionCertBytes),
 							}},
 						},
