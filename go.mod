@@ -7,5 +7,5 @@ require (
 	github.com/jonboulle/clockwork v0.3.0
 	github.com/mattermost/xml-roundtrip-validator v0.1.0
 	github.com/russellhaering/goxmldsig v1.3.0
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.8.2
 )
