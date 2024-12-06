@@ -102,7 +102,7 @@ func debugKeyFp(keyBytes []byte) string {
 }
 
 // DecryptSymmetricKey returns the private key contained in the EncryptedKey document
-func (ek *EncryptedKey) DecryptSymmetricKey(cert *tls.Certificate) (cipher.Block, error) {
+func (ek *EncryptedKey) DecryptSymmetricKey(cert *tls.Certificate, eaEncryptionMethodAlgorithm string) (cipher.Block, error) {
 	if len(cert.Certificate) < 1 {
 		return nil, fmt.Errorf("decryption tls.Certificate has no public certs attached")
 	}
@@ -147,6 +147,14 @@ func (ek *EncryptedKey) DecryptSymmetricKey(cert *tls.Certificate) (cipher.Block
 			}
 		}
 
+		cipher := func(k []byte) (cipher.Block, error) {
+			if eaEncryptionMethodAlgorithm == MethodTripleDESCBC {
+				return des.NewTripleDESCipher(k)
+			} else {
+				return aes.NewCipher(k)
+			}
+		}
+
 		switch ek.EncryptionMethod.Algorithm {
 		case "":
 			return nil, fmt.Errorf("missing encryption algorithm")
@@ -156,8 +164,7 @@ func (ek *EncryptedKey) DecryptSymmetricKey(cert *tls.Certificate) (cipher.Block
 				return nil, fmt.Errorf("rsa internal error: %v", err)
 			}
 
-			// b, err := aes.NewCipher(pt)
-			b, err := des.NewTripleDESCipher(pt) // verifying changes
+			b, err := cipher(pt)
 			if err != nil {
 				return nil, err
 			}
@@ -177,7 +184,7 @@ func (ek *EncryptedKey) DecryptSymmetricKey(cert *tls.Certificate) (cipher.Block
 			//The RSA v1.5 Key Transport algorithm given below are those used in conjunction with TRIPLEDES
 			//Please also see https://www.w3.org/TR/xmlenc-core/#sec-Algorithms and
 			//https://www.w3.org/TR/xmlenc-core/#rsav15note.
-			b, err := aes.NewCipher(pt)
+			b, err := cipher(pt)
 			if err != nil {
 				return nil, err
 			}
